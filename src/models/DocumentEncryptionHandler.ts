@@ -1,9 +1,11 @@
 import { Document } from 'mongoose';
 import { EncryptionAlgorithm } from './EncryptionAlgorithm';
+import { FieldHandler } from './FieldHandler';
 
 export class DocumentEncryptionHandler {
   private collectionName: string;
   private encryptionAlgorithm: EncryptionAlgorithm;
+  private fieldHandler: FieldHandler;
   private fields: string[];
   private key: string;
 
@@ -12,12 +14,14 @@ export class DocumentEncryptionHandler {
     this.fields = fields;
     this.key = key;
     this.encryptionAlgorithm = new EncryptionAlgorithm();
+    this.fieldHandler = new FieldHandler();
   }
 
   async encryptSavedDocumentFields(document: Document) {
     for (const field of this.fields) {
       if (document.isModified(field)) {
-        const value = document[field];
+        const value = this.fieldHandler.get(document, field);
+
         const encryptedValue = await this.encryptionAlgorithm.encrypt(
           value,
           this.key,
@@ -27,7 +31,8 @@ export class DocumentEncryptionHandler {
             recordId: document._id.toString(),
           }
         );
-        document[field] = encryptedValue;
+
+        this.fieldHandler.update(document, field, encryptedValue);
       }
     }
   }
@@ -35,18 +40,14 @@ export class DocumentEncryptionHandler {
   async encryptFields(doc: any, recordId: string) {
     const encryptedMappedFields = await Promise.all(
       this.fields.map(async (field) => {
-        const value = doc[field];
+        const value = this.fieldHandler.get(doc, field);
         if (!value) return;
 
-        const encryptedValue = await this.encryptionAlgorithm.encrypt(
+        const encryptedValue = await this.encryptOneField({
           value,
-          this.key,
-          {
-            collection: this.collectionName,
-            fieldName: field,
-            recordId: recordId,
-          }
-        );
+          fieldName: field,
+          recordId: recordId,
+        });
 
         return { [field]: encryptedValue };
       })
@@ -60,27 +61,60 @@ export class DocumentEncryptionHandler {
     return encryptedFields;
   }
 
+  async encryptOneField(record: {
+    value: string;
+    fieldName: string;
+    recordId: string;
+  }) {
+    const encryptedValue = await this.encryptionAlgorithm.encrypt(
+      record.value,
+      this.key,
+      {
+        collection: this.collectionName,
+        fieldName: record.fieldName,
+        recordId: record.recordId,
+      }
+    );
+
+    return encryptedValue;
+  }
+
   async decryptDocumentsFields(input: Document | Document[]) {
     const docs = Array.isArray(input) ? input : [input].filter(Boolean);
 
     await Promise.all(
       docs.map(async (doc: Document) => {
         for (const field of this.fields) {
-          const v = doc[field];
-          if (v) {
-            const plain = await this.encryptionAlgorithm.decrypt(
-              String(v),
-              this.key,
-              {
-                collection: this.collectionName,
-                fieldName: field,
-                recordId: doc._id.toString(),
-              }
-            );
-            doc[field] = plain;
-          }
+          const v = this.fieldHandler.get(doc, field);
+          if (!v) return;
+
+          const plain = await this.decryptOneField({
+            value: String(v),
+            fieldName: field,
+            recordId: doc._id.toString(),
+          });
+
+          this.fieldHandler.update(doc, field, plain);
         }
       })
     );
+  }
+
+  private async decryptOneField(record: {
+    value: string;
+    fieldName: string;
+    recordId: string;
+  }) {
+    const decryptedValue = await this.encryptionAlgorithm.decrypt(
+      record.value,
+      this.key,
+      {
+        collection: this.collectionName,
+        fieldName: record.fieldName,
+        recordId: record.recordId,
+      }
+    );
+
+    return decryptedValue;
   }
 }
