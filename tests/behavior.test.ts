@@ -17,7 +17,11 @@ describe('Behavior testing', () => {
   });
 
   it('Behavior check: Save new document', async () => {
-    const user = new User({ name: 'Alice', secretData });
+    const user = new User({
+      name: 'Alice',
+      secretData,
+      dni: { number: '123456789' },
+    });
     await user.save();
     aliceId = user._id;
 
@@ -25,7 +29,11 @@ describe('Behavior testing', () => {
   });
 
   it('Behavior check: Create document', async () => {
-    const user = await User.create({ name: 'Bob', secretData });
+    const user = await User.create({
+      name: 'Bob',
+      secretData,
+      dni: { number: '987654321' },
+    });
     bobId = user._id;
 
     expect(user?.secretData).toBe(secretData);

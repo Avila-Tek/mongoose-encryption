@@ -6,6 +6,9 @@ import { getKeyByAlgorithm } from './key';
 interface IUser {
   name: string;
   secretData: string;
+  dni?: {
+    number: string;
+  };
 }
 
 export function createUserModel(
@@ -15,6 +18,9 @@ export function createUserModel(
   const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     secretData: { type: String, required: true },
+    dni: {
+      number: { type: String, required: true },
+    },
   });
 
   const key = getKeyByAlgorithm(algorithm);

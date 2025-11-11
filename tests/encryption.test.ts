@@ -8,32 +8,36 @@ function testEncryption(modelName: string, algorithm: EncryptionAlgorithmEnum) {
   let encryptedUser: any;
   const encryptionHandler = new DocumentEncryptionHandler(
     'users',
-    ['secretData'],
+    ['secretData', 'dni.number'],
     getKeyByAlgorithm(algorithm),
     algorithm
   );
 
-  const user = new User({ name: 'Alice', secretData: 'Something secret' });
+  const user = new User({
+    name: 'Alice',
+    secretData: 'Something secret',
+    dni: {
+      number: '123456789',
+    },
+  });
+  const originalUser = { ...user.toObject() };
 
   it('Encryption selected fields', async () => {
-    const encryptedValues = await encryptionHandler.encryptFields(
-      user,
-      user._id.toString()
-    );
+    await encryptionHandler.encryptFields(user, user._id.toString());
 
-    encryptedUser = { ...user.toObject(), ...encryptedValues };
-
-    expect(encryptedUser).toBeDefined();
-    expect(encryptedUser!.name).toBe(user.name);
-    expect(encryptedUser!.secretData).not.toBe(user.secretData);
+    expect(user).toBeDefined();
+    expect(user!.name).toBe(user.name);
+    expect(user!.secretData).not.toBe(originalUser.secretData);
+    expect(user!.dni.number).not.toBe(originalUser.dni.number);
   });
 
   it('Decryption of selected fields', async () => {
-    await encryptionHandler.decryptDocumentsFields(encryptedUser);
+    await encryptionHandler.decryptDocumentsFields(user);
 
-    expect(encryptedUser).toBeDefined();
-    expect(encryptedUser!.name).toBe(user.name);
-    expect(encryptedUser!.secretData).toBe(user.secretData);
+    expect(user).toBeDefined();
+    expect(user!.name).toBe(originalUser.name);
+    expect(user!.secretData).toBe(originalUser.secretData);
+    expect(user!.dni.number).toBe(originalUser.dni.number);
   });
 }
 

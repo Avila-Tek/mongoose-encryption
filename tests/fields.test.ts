@@ -3,7 +3,11 @@ dotenv.config({ path: '../.env' });
 import { FieldHandler } from '../src/models/FieldHandler';
 
 describe('Field Handling', () => {
-  const fieldHandler = new FieldHandler();
+  const fieldHandler = new FieldHandler(
+    'testCollection',
+    'testKey',
+    'aes-128-gcm'
+  );
 
   const sampleObject = {
     name: 'Bob',
