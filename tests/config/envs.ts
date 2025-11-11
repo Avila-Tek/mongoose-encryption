@@ -6,4 +6,5 @@ function requireEnv(name: string): string {
   return v;
 }
 
-export const AES_SECRET = requireEnv('AES_SECRET');
+export const AES_256_SECRET = requireEnv('AES_256_SECRET');
+export const AES_128_SECRET = requireEnv('AES_128_SECRET');

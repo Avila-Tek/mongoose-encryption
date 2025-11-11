@@ -1,18 +1,18 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' });
-import { AES_SECRET } from './config/envs';
 import { DocumentEncryptionHandler } from '../src/models/DocumentEncryptionHandler';
+import { EncryptionAlgorithmEnum } from '../src/types/algorithms';
 import { createUserModel } from './utils/schema';
+import { getKeyByAlgorithm } from './utils/key';
 
-const User = createUserModel();
-
-describe('AES Encryption', () => {
+function testEncryption(modelName: string, algorithm: EncryptionAlgorithmEnum) {
+  const User = createUserModel(modelName, algorithm);
   let encryptedUser: any;
   const encryptionHandler = new DocumentEncryptionHandler(
     'users',
     ['secretData'],
-    AES_SECRET
+    getKeyByAlgorithm(algorithm),
+    algorithm
   );
+
   const user = new User({ name: 'Alice', secretData: 'Something secret' });
 
   it('Encryption selected fields', async () => {
@@ -35,4 +35,16 @@ describe('AES Encryption', () => {
     expect(encryptedUser!.name).toBe(user.name);
     expect(encryptedUser!.secretData).toBe(user.secretData);
   });
+}
+
+describe('AES 256 Encryption', () => {
+  testEncryption('UserAES256', 'aes-256-gcm');
+});
+
+describe('AES 128 Encryption', () => {
+  testEncryption('UserAES128', 'aes-128-gcm');
+});
+
+describe('ChaCha20-Poly1305 Encryption', () => {
+  testEncryption('UserChaCha20', 'chacha20-poly1305');
 });

@@ -1,14 +1,21 @@
 import { Schema } from 'mongoose';
 import { DocumentEncryptionHandler } from './models/DocumentEncryptionHandler';
+import { EncryptionAlgorithmEnum } from './types/algorithms';
 
 export function encryptionPlugin(
   schema: Schema,
-  options: { fields: string[]; key: string; collectionName: string }
+  options: {
+    fields: string[];
+    key: string;
+    collectionName: string;
+    algorithm: EncryptionAlgorithmEnum;
+  }
 ) {
   const handler = new DocumentEncryptionHandler(
     options.collectionName,
     options.fields,
-    options.key
+    options.key,
+    options.algorithm
   );
 
   schema.pre('save', async function (next) {

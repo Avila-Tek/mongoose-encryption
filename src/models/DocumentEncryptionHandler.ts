@@ -1,19 +1,25 @@
 import { Document } from 'mongoose';
-import { EncryptionAlgorithm } from './EncryptionAlgorithm';
+import { EncryptionAlgorithmHandler } from './EncryptionAlgorithmHandler';
 import { FieldHandler } from './FieldHandler';
+import { EncryptionAlgorithmEnum } from '../types/algorithms';
 
 export class DocumentEncryptionHandler {
   private collectionName: string;
-  private encryptionAlgorithm: EncryptionAlgorithm;
+  private encryptionAlgorithm: EncryptionAlgorithmHandler;
   private fieldHandler: FieldHandler;
   private fields: string[];
   private key: string;
 
-  constructor(collectionName: string, fields: string[], key: string) {
+  constructor(
+    collectionName: string,
+    fields: string[],
+    key: string,
+    algorithm: EncryptionAlgorithmEnum
+  ) {
     this.collectionName = collectionName;
     this.fields = fields;
     this.key = key;
-    this.encryptionAlgorithm = new EncryptionAlgorithm();
+    this.encryptionAlgorithm = new EncryptionAlgorithmHandler(algorithm);
     this.fieldHandler = new FieldHandler();
   }
 

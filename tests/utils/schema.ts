@@ -1,23 +1,30 @@
 import mongoose from 'mongoose';
+import { EncryptionAlgorithmEnum } from '../../src/types/algorithms';
 import { encryptionPlugin } from '../../src/index';
-import { AES_SECRET } from '../config/envs';
+import { getKeyByAlgorithm } from './key';
 
 interface IUser {
   name: string;
   secretData: string;
 }
 
-export function createUserModel(): mongoose.Model<IUser> {
+export function createUserModel(
+  modelName: string,
+  algorithm: EncryptionAlgorithmEnum
+): mongoose.Model<IUser> {
   const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     secretData: { type: String, required: true },
   });
 
+  const key = getKeyByAlgorithm(algorithm);
+
   userSchema.plugin(encryptionPlugin, {
-    key: AES_SECRET,
+    key,
+    algorithm,
     fields: ['secretData'],
     collectionName: 'users',
   });
 
-  return mongoose.model('User', userSchema);
+  return mongoose.model(modelName, userSchema);
 }

@@ -1,9 +1,7 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' });
 import mongoose from 'mongoose';
 import { createUserModel } from './utils/schema';
 
-const User = createUserModel();
+const User = createUserModel('User256', 'aes-256-gcm');
 
 describe('Behavior testing', () => {
   let aliceId: mongoose.Types.ObjectId;
