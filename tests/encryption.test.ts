@@ -5,11 +5,18 @@ import { getKeyByAlgorithm } from './utils/key';
 
 function testEncryption(modelName: string, algorithm: EncryptionAlgorithmEnum) {
   const User = createUserModel(modelName, algorithm);
-  let encryptedUser: any;
+  const key = getKeyByAlgorithm(algorithm);
+
   const encryptionHandler = new DocumentEncryptionHandler(
     'users',
-    ['secretData', 'dni.number'],
-    getKeyByAlgorithm(algorithm),
+    [
+      'secretData',
+      'dni.number',
+      'phones.number',
+      'bankAccounts.accountNumber',
+      'bankAccounts.privateNumbers',
+    ],
+    key,
     algorithm
   );
 
@@ -19,7 +26,19 @@ function testEncryption(modelName: string, algorithm: EncryptionAlgorithmEnum) {
     dni: {
       number: '123456789',
     },
+    phones: [{ number: '555-1234' }, { number: '555-5678' }],
+    bankAccounts: [
+      {
+        accountNumber: '987654321',
+        privateNumbers: ['1111', '2222'],
+      },
+      {
+        accountNumber: '123456789',
+        privateNumbers: ['3333', '4444'],
+      },
+    ],
   });
+
   const originalUser = { ...user.toObject() };
 
   it('Encryption selected fields', async () => {
@@ -29,6 +48,26 @@ function testEncryption(modelName: string, algorithm: EncryptionAlgorithmEnum) {
     expect(user!.name).toBe(user.name);
     expect(user!.secretData).not.toBe(originalUser.secretData);
     expect(user!.dni.number).not.toBe(originalUser.dni.number);
+    expect(user!.phones[0].number).not.toBe(originalUser.phones[0].number);
+    expect(user!.phones[1].number).not.toBe(originalUser.phones[1].number);
+    expect(user!.bankAccounts[0].accountNumber).not.toBe(
+      originalUser.bankAccounts[0].accountNumber
+    );
+    expect(user!.bankAccounts[0].privateNumbers[0]).not.toBe(
+      originalUser.bankAccounts[0].privateNumbers[0]
+    );
+    expect(user!.bankAccounts[0].privateNumbers[1]).not.toBe(
+      originalUser.bankAccounts[0].privateNumbers[1]
+    );
+    expect(user!.bankAccounts[1].accountNumber).not.toBe(
+      originalUser.bankAccounts[1].accountNumber
+    );
+    expect(user!.bankAccounts[1].privateNumbers[0]).not.toBe(
+      originalUser.bankAccounts[1].privateNumbers[0]
+    );
+    expect(user!.bankAccounts[1].privateNumbers[1]).not.toBe(
+      originalUser.bankAccounts[1].privateNumbers[1]
+    );
   });
 
   it('Decryption of selected fields', async () => {
@@ -38,6 +77,26 @@ function testEncryption(modelName: string, algorithm: EncryptionAlgorithmEnum) {
     expect(user!.name).toBe(originalUser.name);
     expect(user!.secretData).toBe(originalUser.secretData);
     expect(user!.dni.number).toBe(originalUser.dni.number);
+    expect(user!.phones[0].number).toBe(originalUser.phones[0].number);
+    expect(user!.phones[1].number).toBe(originalUser.phones[1].number);
+    expect(user!.bankAccounts[0].accountNumber).toBe(
+      originalUser.bankAccounts[0].accountNumber
+    );
+    expect(user!.bankAccounts[0].privateNumbers[0]).toBe(
+      originalUser.bankAccounts[0].privateNumbers[0]
+    );
+    expect(user!.bankAccounts[0].privateNumbers[1]).toBe(
+      originalUser.bankAccounts[0].privateNumbers[1]
+    );
+    expect(user!.bankAccounts[1].accountNumber).toBe(
+      originalUser.bankAccounts[1].accountNumber
+    );
+    expect(user!.bankAccounts[1].privateNumbers[0]).toBe(
+      originalUser.bankAccounts[1].privateNumbers[0]
+    );
+    expect(user!.bankAccounts[1].privateNumbers[1]).toBe(
+      originalUser.bankAccounts[1].privateNumbers[1]
+    );
   });
 }
 

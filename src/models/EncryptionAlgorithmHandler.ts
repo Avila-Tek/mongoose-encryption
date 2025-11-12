@@ -19,7 +19,7 @@ export class EncryptionAlgorithmHandler {
     } else if (algorithm === 'aes-128-gcm') {
       this.algorithm = new AES128GCM();
     } else if (algorithm === 'chacha20-poly1305') {
-      this.algorithm = new ChaCha20Poly1305(); // Placeholder for ChaCha20-Poly1305 implementation
+      this.algorithm = new ChaCha20Poly1305();
     } else {
       throw new Error(`Unsupported algorithm: ${algorithm}`);
     }
