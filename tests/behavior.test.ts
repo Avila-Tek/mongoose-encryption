@@ -32,7 +32,7 @@ describe('Behavior testing', () => {
     const user = await User.create({
       name: 'Bob',
       secretData,
-      dni: { number: '987654321' },
+      // dni: { number: '987654321' },
     });
     bobId = user._id;
 

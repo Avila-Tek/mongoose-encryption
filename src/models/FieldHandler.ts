@@ -30,6 +30,8 @@ export class FieldHandler {
     }
 
     const value = this.get(object, field);
+    if (!value || value === undefined) return;
+
     const encryptedValue = await this.encryptOneField(
       value,
       field,

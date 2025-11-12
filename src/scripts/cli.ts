@@ -56,16 +56,12 @@ program
     // await documentEncryptionHandler.encryptFields();
 
     let encryptedDocs = 0;
-    for (let i = 0; i < fields.length; i++) {
-      const docs = await coll
-        .find(
-          {},
-          {
-            skip: i * 100,
-            limit: 100,
-          }
-        )
-        .toArray();
+    let batch = 0;
+    while (encryptedDocs < totalDocs) {
+      const skip = batch * 100;
+      const limit = Math.min(100, totalDocs - encryptedDocs);
+
+      const docs = await coll.find({}, { skip, limit }).toArray();
 
       await Promise.all(
         docs.map(async (doc: any) => {
@@ -80,6 +76,7 @@ program
       );
 
       encryptedDocs += docs.length;
+      batch += 1;
     }
 
     await mongoose.disconnect();

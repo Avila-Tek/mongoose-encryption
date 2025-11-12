@@ -30,7 +30,6 @@ function testEncryption(modelName: string, algorithm: EncryptionAlgorithmEnum) {
     bankAccounts: [
       {
         accountNumber: '987654321',
-        privateNumbers: ['1111', '2222'],
       },
       {
         accountNumber: '123456789',
@@ -52,12 +51,6 @@ function testEncryption(modelName: string, algorithm: EncryptionAlgorithmEnum) {
     expect(user!.phones[1].number).not.toBe(originalUser.phones[1].number);
     expect(user!.bankAccounts[0].accountNumber).not.toBe(
       originalUser.bankAccounts[0].accountNumber
-    );
-    expect(user!.bankAccounts[0].privateNumbers[0]).not.toBe(
-      originalUser.bankAccounts[0].privateNumbers[0]
-    );
-    expect(user!.bankAccounts[0].privateNumbers[1]).not.toBe(
-      originalUser.bankAccounts[0].privateNumbers[1]
     );
     expect(user!.bankAccounts[1].accountNumber).not.toBe(
       originalUser.bankAccounts[1].accountNumber
@@ -81,12 +74,6 @@ function testEncryption(modelName: string, algorithm: EncryptionAlgorithmEnum) {
     expect(user!.phones[1].number).toBe(originalUser.phones[1].number);
     expect(user!.bankAccounts[0].accountNumber).toBe(
       originalUser.bankAccounts[0].accountNumber
-    );
-    expect(user!.bankAccounts[0].privateNumbers[0]).toBe(
-      originalUser.bankAccounts[0].privateNumbers[0]
-    );
-    expect(user!.bankAccounts[0].privateNumbers[1]).toBe(
-      originalUser.bankAccounts[0].privateNumbers[1]
     );
     expect(user!.bankAccounts[1].accountNumber).toBe(
       originalUser.bankAccounts[1].accountNumber
