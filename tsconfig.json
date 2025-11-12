@@ -2,8 +2,8 @@
   "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "outDir": "dist",
     "baseUrl": ".",
