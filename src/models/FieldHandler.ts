@@ -140,7 +140,12 @@ export class FieldHandler {
       return object;
     }
 
-    object[field] = this.updateArrayFields(value, nextFields, objectId, func);
+    object[field] = await this.updateArrayFields(
+      value,
+      nextFields,
+      objectId,
+      func
+    );
 
     return object;
   }
