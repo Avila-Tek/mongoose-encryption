@@ -1,4 +1,4 @@
-import inquirer from 'inquirer';
+import { input } from '@inquirer/prompts';
 import { ALGORITHMS } from '../../types/algorithms';
 
 export async function getInputs(options: any) {
@@ -30,79 +30,56 @@ export async function getInputs(options: any) {
     algorithm = await getEncryptionAlgorithm();
   }
 
-  console.log(fields);
-
   return { collection, fields, key, algorithm, databaseUri };
 }
 
 async function getCollectionInput() {
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'collection',
-      message: 'Which collection do you want to migrate?',
-      validate: (value) => (value ? true : 'Collection is required'),
-    },
-  ]);
+  const collection = await input({
+    message: 'Which collection do you want to migrate?',
+    validate: (value) => (value ? true : 'Collection is required'),
+  });
 
-  return answers.collection;
+  return collection;
 }
 
 async function getCollectionFields() {
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'fields',
-      message:
-        'Please specify the desired collection fields (comma-separated):',
-      validate: (value) => (value ? true : 'Collection fields are required'),
-    },
-  ]);
+  const fields = await input({
+    message: 'Please specify the desired collection fields (comma-separated):',
+    validate: (value) => (value ? true : 'Collection fields are required'),
+  });
 
-  return answers.fields.split(',').map((attr: string) => attr.trim());
+  return fields.split(',').map((attr: string) => attr.trim());
 }
 
 async function getEncryptionKey() {
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'encryptionKey',
-      message: 'Please specify the encryption key:',
-      validate: (value) => (value ? true : 'Encryption key is required'),
-    },
-  ]);
+  const key = await input({
+    message: 'Please specify the encryption key:',
+    validate: (value) => (value ? true : 'Encryption key is required'),
+  });
 
-  return answers.encryptionKey;
+  return key;
 }
 
 async function getEncryptionAlgorithm() {
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'algorithm',
-      message: 'Please specify the encryption algorithm:',
-      validate: (value) => {
-        if (!value) return 'Encryption algorithm is required';
-        if (!ALGORITHMS.includes(value as any)) {
-          return 'Invalid encryption algorithm';
-        }
-        return true;
-      },
+  const algorithm = await input({
+    message: 'Please specify the encryption algorithm:',
+    validate: (value) => {
+      if (!value) return 'Encryption algorithm is required';
+      if (!ALGORITHMS.includes(value as any)) {
+        return 'Invalid encryption algorithm';
+      }
+      return true;
     },
-  ]);
+  });
 
-  return answers.algorithm;
+  return algorithm;
 }
 
 async function getDatabaseURI() {
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'database',
-      message: 'Please specify the database connection URI:',
-      validate: (value) => (value ? true : 'Database URI is required'),
-    },
-  ]);
+  const database = await input({
+    message: 'Please specify the database connection URI:',
+    validate: (value) => (value ? true : 'Database URI is required'),
+  });
 
-  return answers.database;
+  return database;
 }
