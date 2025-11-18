@@ -1,4 +1,5 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { EncryptionAlgorithm } from './EncryptionAlgorithm';
 
 interface AADContext {
   collection: string;
@@ -9,11 +10,11 @@ interface AADContext {
 const IV_BYTE_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
 
-export class EncryptionAlgorithm {
+export class ChaCha20Poly1305 implements EncryptionAlgorithm {
   /**
-   * Encrypts plaintext using AES-256-GCM with a random IV and returns a base64-encoded string containing both the IV and ciphertext.
+   * Encrypts plaintext using ChaCha20-Poly1305 with a random IV and returns a base64-encoded string containing both the IV and ciphertext.
    * @param plaintext - The plaintext string to encrypt.
-   * @param base64Key - The base64-encoded 32-byte key for AES-256 encryption.
+   * @param base64Key - The base64-encoded 32-byte key for ChaCha20-Poly1305 encryption.
    * @returns A promise that resolves to the base64-encoded string containing the IV and ciphertext.
    */
   public async encrypt(
@@ -24,7 +25,7 @@ export class EncryptionAlgorithm {
     const key = Buffer.from(base64Key, 'base64');
 
     const iv = randomBytes(IV_BYTE_LENGTH);
-    const cipher = createCipheriv('aes-256-gcm', key, iv, {
+    const cipher = createCipheriv('chacha20-poly1305', key, iv, {
       authTagLength: AUTH_TAG_LENGTH,
     });
     const aad = this.buildAdditionalAuthenticatedData(context);
@@ -47,9 +48,9 @@ export class EncryptionAlgorithm {
   }
 
   /**
-   * Decrypts a base64-encoded string containing the IV and ciphertext encrypted with AES-256-GCM.
+   * Decrypts a base64-encoded string containing the IV and ciphertext encrypted with ChaCha20-Poly1305.
    * @param base64Payload - The base64-encoded string containing the IV and ciphertext.
-   * @param base64Key - The base64-encoded 32-byte key for AES-256 encryption.
+   * @param base64Key - The base64-encoded 32-byte key for ChaCha20-Poly1305 encryption.
    * @returns A promise that resolves to the decrypted plaintext string.
    */
   public async decrypt(
@@ -66,7 +67,7 @@ export class EncryptionAlgorithm {
     );
     const cipher = data.subarray(IV_BYTE_LENGTH + AUTH_TAG_LENGTH);
 
-    const decipher = createDecipheriv('aes-256-gcm', key, iv, {
+    const decipher = createDecipheriv('chacha20-poly1305', key, iv, {
       authTagLength: AUTH_TAG_LENGTH,
     });
 

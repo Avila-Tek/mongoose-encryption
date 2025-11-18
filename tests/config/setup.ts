@@ -1,7 +1,8 @@
+// jest.spyOn(global.console, 'log').mockImplementation(() => jest.fn());
+import dotenv from 'dotenv';
+dotenv.config({ path: '../.env' });
 import mongoose from 'mongoose';
 import { Database } from '../Database';
-
-jest.spyOn(global.console, 'log').mockImplementation(() => jest.fn());
 
 const database = new Database();
 
