@@ -29,9 +29,9 @@ export function encryptionPlugin(
     if (!update) next();
 
     const recordId = this.getQuery()._id;
-    const encryptedFields = await handler.encryptFields(update, recordId);
+    await handler.encryptFields(update, recordId);
 
-    // this.setUpdate({ ...update, ...encryptedFields });
+    this.setUpdate({ ...update });
 
     next();
   });
