@@ -1,3 +1,9 @@
 {
-  "conventionalCommits.scopes": ["encryption", "tests", "cli", "docs"]
+  "conventionalCommits.scopes": [
+    "encryption",
+    "tests",
+    "cli",
+    "docs",
+    "version"
+  ]
 }
