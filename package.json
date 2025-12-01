@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "commonjs",
   "license": "MIT",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
   "scripts": {
     "test": "jest",
     "build": "tsup"
